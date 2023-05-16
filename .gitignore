@@ -4,3 +4,5 @@
 /target/maven-status/
 /target/surefire-reports/
 /target/test-classes/
+/.allure/
+/.idea/
