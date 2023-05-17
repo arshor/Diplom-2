@@ -13,24 +13,26 @@ public class CreateUserTests {
     private UserClient userClient;
     private User user;
     ValidatableResponse response;
-    String accessToken;
 
     @Before
     public void setUp() {
         user = UserGenerator.getRandom();
         userClient = new UserClient();
-        response = userClient.createUser(user);
     }
 
     @After
     public void cleanUp() {
-        accessToken = response.extract().path("accessToken");
-        response = userClient.deleteUser(accessToken.split(" ")[1]);
+        if (response != null) {
+            String accessToken = response.extract().path("accessToken");
+            userClient.deleteUser(accessToken.split(" ")[1]);
+        }
     }
 
     @Test
     @DisplayName("Создание нового пользователя успешно")
     public void createNewUserByGoodCredentialsShowsTrue() {
+
+        response = userClient.createUser(user);
 
         int statusCode = response.extract().statusCode();
         boolean isSuccess = response.extract().path("success");
@@ -42,6 +44,8 @@ public class CreateUserTests {
     @Test
     @DisplayName("Создание нового пользователя с уже существующим логином")
     public void createNewUserWithTheSameLoginShowsFalse() {
+
+        response = userClient.createUser(user);
 
         ValidatableResponse responseCreateNewUserWithTheSameLogin = userClient.createUser(user);;
 

@@ -21,10 +21,11 @@ public class UserClient extends RestClient {
     }
 
     @Step("Авторизация пользователя")
-    public ValidatableResponse loginUser(UserCredentials credentials, String accessToken) {
+    //public ValidatableResponse loginUser(UserCredentials credentials, String accessToken) {
+    public ValidatableResponse loginUser(UserCredentials credentials) {
         return given()
                 .spec(getBaseSpec())
-                .auth().oauth2(accessToken)
+                //.auth().oauth2(accessToken)
                 .body(credentials)
                 .when()
                 .post(LOGIN_PATH)
