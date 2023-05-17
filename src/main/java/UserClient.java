@@ -21,11 +21,9 @@ public class UserClient extends RestClient {
     }
 
     @Step("Авторизация пользователя")
-    //public ValidatableResponse loginUser(UserCredentials credentials, String accessToken) {
     public ValidatableResponse loginUser(UserCredentials credentials) {
         return given()
                 .spec(getBaseSpec())
-                //.auth().oauth2(accessToken)
                 .body(credentials)
                 .when()
                 .post(LOGIN_PATH)
@@ -49,6 +47,27 @@ public class UserClient extends RestClient {
                 .auth().oauth2(accessToken)
                 .when()
                 .delete(USER_PATH)
+                .then();
+    }
+
+    @Step("Обновление данных пользователя")
+    public ValidatableResponse updateUser(String updateData, String accessToken) {
+        return given()
+                .spec(getBaseSpec())
+                .auth().oauth2(accessToken)
+                .body(updateData)
+                .when()
+                .patch(USER_PATH)
+                .then();
+    }
+
+    @Step("Получение данных пользователя")
+    public ValidatableResponse getUserData(String accessToken) {
+        return given()
+                .spec(getBaseSpec())
+                .auth().oauth2(accessToken)
+                .when()
+                .get(USER_PATH)
                 .then();
     }
 }
