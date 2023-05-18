@@ -10,7 +10,7 @@ import java.util.List;
 import static org.apache.http.HttpStatus.*;
 import static org.junit.Assert.*;
 
-public class CreateOrderTests {
+public class CreateAndGetOrderTests {
 
     private UserClient userClient;
     private User user;
@@ -84,6 +84,47 @@ public class CreateOrderTests {
 
         assertEquals("Статус ответа не соответствует требуемому", SC_BAD_REQUEST, statusCode);
         assertFalse("Заказ не должен быть создан", isSuccess);;
+    }
+
+    @Test
+    @DisplayName("Создание заказа авторизованным пользователем с неверным хешем ингредиентов")
+    public void createOrderByLoginUserWithWrongHashIngredientsShowsFalse() {
+
+        Order orderWithWrongHash = new Order();
+        orderWithWrongHash.setIngredients(List.of("qwerty12345678"));
+
+        ValidatableResponse createOrderResponse = orderClient.createOrder(orderWithWrongHash, accessToken);
+        int statusCode = createOrderResponse.extract().statusCode();
+
+        assertEquals("Статус ответа не соответствует требуемому", SC_INTERNAL_SERVER_ERROR, statusCode);
+    }
+
+    @Test
+    @DisplayName("Получение списка заказов авторизованным пользователем")
+    public void getOrderListByLoginUserShowsTrue() {
+
+        orderClient.createOrder(createIngredientsList(), accessToken);
+
+        ValidatableResponse getOrderListResponse = orderClient.getOrders(accessToken);
+        int statusCode = getOrderListResponse.extract().statusCode();
+        boolean isSuccess = getOrderListResponse.extract().path("success");
+
+        assertEquals("Статус ответа не соответствует требуемому", SC_OK, statusCode);
+        assertTrue("Список заказов не получен", isSuccess);
+    }
+
+    @Test
+    @DisplayName("Получение списка заказов не авторизованным пользователем")
+    public void getOrderListByNotLoginUserShowsFalse() {
+
+        orderClient.createOrder(createIngredientsList(), accessToken);
+
+        ValidatableResponse getOrderListResponse = orderClient.getOrders("");
+        int statusCode = getOrderListResponse.extract().statusCode();
+        boolean isSuccess = getOrderListResponse.extract().path("success");
+
+        assertEquals("Статус ответа не соответствует требуемому", SC_UNAUTHORIZED, statusCode);
+        assertFalse("Список заказов не должен быть получен", isSuccess);
     }
 
     @DisplayName("Создание списка ингредиентов")

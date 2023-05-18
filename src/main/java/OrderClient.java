@@ -9,7 +9,7 @@ public class OrderClient extends RestClient {
 
     private List<String> ingredientsList;
     private static final String GET_INGREDIENTS = "api/ingredients/";
-    private static final String CREATE_ORDER = "api/orders/";
+    private static final String CREATE_GET_ORDER = "api/orders/";
 
     @Step("Получение списка ингредиентов")
     public List<String> getIngredients() {
@@ -21,14 +21,24 @@ public class OrderClient extends RestClient {
                 .path("data._id");
     }
 
-    @Step("Создание нового заказа, авторизованным пользователем")
+    @Step("Создание нового заказа")
     public ValidatableResponse createOrder(Order order, String accessToken) {
         return given()
                 .spec(getBaseSpec())
                 .header("Authorization", accessToken)
                 .body(order)
                 .when()
-                .post(CREATE_ORDER)
+                .post(CREATE_GET_ORDER)
+                .then();
+    }
+
+    @Step("Получение списка заказов")
+    public ValidatableResponse getOrders(String accessToken) {
+        return given()
+                .spec(getBaseSpec())
+                .header("Authorization", accessToken)
+                .when()
+                .get(CREATE_GET_ORDER)
                 .then();
     }
 }
