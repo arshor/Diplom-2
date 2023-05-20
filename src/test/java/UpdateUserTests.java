@@ -27,7 +27,7 @@ public class UpdateUserTests {
 
     @After
     public void cleanUp() {
-        if (response != null) {
+        if (response.extract().statusCode() == SC_OK) {
             userClient.deleteUser(accessToken);
         }
     }

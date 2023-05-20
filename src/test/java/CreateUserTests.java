@@ -22,7 +22,7 @@ public class CreateUserTests {
 
     @After
     public void cleanUp() {
-        if (response != null) {
+        if (response.extract().statusCode() == SC_OK) {
             String accessToken = response.extract().path("accessToken");
             userClient.deleteUser(accessToken.split(" ")[1]);
         }
@@ -47,7 +47,7 @@ public class CreateUserTests {
 
         response = userClient.createUser(user);
 
-        ValidatableResponse responseCreateNewUserWithTheSameLogin = userClient.createUser(user);;
+        ValidatableResponse responseCreateNewUserWithTheSameLogin = userClient.createUser(user);
 
         int statusCode = responseCreateNewUserWithTheSameLogin.extract().statusCode();
         boolean isSuccess = responseCreateNewUserWithTheSameLogin.extract().path("success");
@@ -65,11 +65,11 @@ public class CreateUserTests {
 
         User newUser = UserGenerator.getRandom();
         newUser.setEmail(null);
-        ValidatableResponse responseCreateNewUserWithoutLogin = userClient.createUser(newUser);;
+        response = userClient.createUser(newUser);
 
-        int statusCode = responseCreateNewUserWithoutLogin.extract().statusCode();
-        boolean isSuccess = responseCreateNewUserWithoutLogin.extract().path("success");
-        String message = responseCreateNewUserWithoutLogin.extract().path("message");
+        int statusCode = response.extract().statusCode();
+        boolean isSuccess = response.extract().path("success");
+        String message = response.extract().path("message");
 
         assertEquals("Статус ответа не соответствует требуемому", SC_FORBIDDEN, statusCode);
         assertFalse("Новый пользователь не должен был создан", isSuccess);
@@ -83,11 +83,11 @@ public class CreateUserTests {
 
         User newUser = UserGenerator.getRandom();
         newUser.setPassword(null);
-        ValidatableResponse responseCreateNewUserWithoutPassword = userClient.createUser(newUser);;
+        response = userClient.createUser(newUser);
 
-        int statusCode = responseCreateNewUserWithoutPassword.extract().statusCode();
-        boolean isSuccess = responseCreateNewUserWithoutPassword.extract().path("success");
-        String message = responseCreateNewUserWithoutPassword.extract().path("message");
+        int statusCode = response.extract().statusCode();
+        boolean isSuccess = response.extract().path("success");
+        String message = response.extract().path("message");
 
         assertEquals("Статус ответа не соответствует требуемому", SC_FORBIDDEN, statusCode);
         assertFalse("Новый пользователь не должен был создан", isSuccess);
@@ -101,11 +101,11 @@ public class CreateUserTests {
 
         User newUser = UserGenerator.getRandom();
         newUser.setName(null);
-        ValidatableResponse responseCreateNewUserWithoutName = userClient.createUser(newUser);;
+        response = userClient.createUser(newUser);
 
-        int statusCode = responseCreateNewUserWithoutName.extract().statusCode();
-        boolean isSuccess = responseCreateNewUserWithoutName.extract().path("success");
-        String message = responseCreateNewUserWithoutName.extract().path("message");
+        int statusCode = response.extract().statusCode();
+        boolean isSuccess = response.extract().path("success");
+        String message = response.extract().path("message");
 
         assertEquals("Статус ответа не соответствует требуемому", SC_FORBIDDEN, statusCode);
         assertFalse("Новый пользователь не должен был создан", isSuccess);

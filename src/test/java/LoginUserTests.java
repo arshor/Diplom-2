@@ -12,8 +12,6 @@ public class LoginUserTests {
     private UserClient userClient;
     private User user;
     private ValidatableResponse response;
-    private String accessToken;
-    private String refreshToken;
 
     @Before
     public void setUp() {
@@ -24,8 +22,8 @@ public class LoginUserTests {
 
     @After
     public void cleanUp() {
-        if (response != null) {
-            accessToken = response.extract().path("accessToken");
+        if (response.extract().statusCode() == SC_OK) {
+            String accessToken = response.extract().path("accessToken");
             userClient.deleteUser(accessToken.split(" ")[1]);
         }
     }
@@ -38,7 +36,7 @@ public class LoginUserTests {
 
         int statusCode = loginResponse.extract().statusCode();
         boolean isSuccess = loginResponse.extract().path("success");
-        refreshToken = response.extract().path("refreshToken");
+        String refreshToken = response.extract().path("refreshToken");
 
         assertEquals("Статус ответа авторизации не соответствует требуемому", SC_OK, statusCode);
         assertTrue("Пользователь не авторизован", isSuccess);

@@ -15,10 +15,8 @@ public class CreateAndGetOrderTests {
     private UserClient userClient;
     private User user;
     private OrderClient orderClient;
-    private Order order;
     private ValidatableResponse response;
     private String accessToken;
-    private String refreshToken;
 
     @Before
     public void setUp() {
@@ -26,14 +24,13 @@ public class CreateAndGetOrderTests {
         userClient = new UserClient();
         response = userClient.createUser(user);
         accessToken = response.extract().path("accessToken");
-        refreshToken = response.extract().path("refreshToken");
 
         orderClient = new OrderClient();
     }
 
     @After
     public void cleanUp() {
-        if (response != null) {
+        if (response.extract().statusCode() == SC_OK) {
             userClient.deleteUser(accessToken.split(" ")[1]);
         }
     }
@@ -83,7 +80,7 @@ public class CreateAndGetOrderTests {
         boolean isSuccess = createOrderResponse.extract().path("success");
 
         assertEquals("Статус ответа не соответствует требуемому", SC_BAD_REQUEST, statusCode);
-        assertFalse("Заказ не должен быть создан", isSuccess);;
+        assertFalse("Заказ не должен быть создан", isSuccess);
     }
 
     @Test
